@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <Properties>
+        <!--
+          <Property name="Cloud.Pattern.Layout">%-5p [%t] %C{1} (%M:%L) %X [cf_application_name=${sys:mdc_cf_app_name}, cf_space_name=${sys:mdc_cf_space_name}, cf_application_version=${sys:mdc_cf_app_version}, cf_instance_id=${sys:mdc_cf_instance_id}]- %mask%n</Property>
+        -->
+        <Property name="Def.Pattern.Layout">%d %-5p [%t] %c (%M:%L) %X- %m%n</Property>
+        <Property name="Fatal.Pattern.Layout">%d FATAL [%t] %c (%M:%L) %X- %m%n</Property>
+        <Property name="Def.Log.Level">info</Property>
+    </Properties>
+    <Appenders>
+        <!-- STDOUT to NOT log anything at or above ERROR level -->
+        <Console name="STDOUT" target="SYSTEM_OUT">
+            <ThresholdFilter level="ERROR" onMatch="DENY" onMismatch="ACCEPT"/>
+            <PatternLayout pattern="${Def.Pattern.Layout}"/>
+        </Console>
+        <!-- STDERR to log NON-FATAL events using standard layout pattern -->
+        <Console name="STDERR" target="SYSTEM_ERR">
+            <MarkerFilter marker="FATAL" onMatch="DENY" onMismatch="ACCEPT"/>
+            <PatternLayout pattern="${Def.Pattern.Layout}"/>
+        </Console>
+        <!-- STDERR to log FATAL events using fatal layout pattern -->
+        <Console name="FATAL_STDERR" target="SYSTEM_ERR">
+            <MarkerFilter marker="FATAL" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="${Fatal.Pattern.Layout}"/>
+        </Console>
+    </Appenders>
+    <Loggers>
+        <!-- log to all Appenders based on level -->
+        <Root level="${Def.Log.Level}" includeLocation="true">
+            <AppenderRef ref="STDOUT" />
+            <AppenderRef ref="STDERR" level="ERROR" />
+            <!-- FATAL marker based appenders -->
+            <AppenderRef ref="FATAL_STDERR" level="ERROR" />
+        </Root>
+    </Loggers>
+</Configuration>
